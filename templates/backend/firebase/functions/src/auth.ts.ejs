@@ -1,0 +1,72 @@
+import * as functions from 'firebase-functions';
+import * as admin from 'firebase-admin';
+
+export const onUserCreated = functions.auth.user().onCreate(async (user) => {
+  try {
+    // Set default custom claims
+    await admin.auth().setCustomUserClaims(user.uid, {
+      role: 'user',
+      createdAt: Date.now()
+    });
+
+    // Create user document in Firestore
+    await admin.firestore().collection('users').doc(user.uid).set({
+      email: user.email,
+      displayName: user.displayName || '',
+      photoURL: user.photoURL || '',
+      role: 'user',
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    return null;
+  } catch (error) {
+    console.error('Error in onUserCreated:', error);
+    throw error;
+  }
+});
+
+export const onUserDeleted = functions.auth.user().onDelete(async (user) => {
+  try {
+    // Delete user document from Firestore
+    await admin.firestore().collection('users').doc(user.uid).delete();
+    return null;
+  } catch (error) {
+    console.error('Error in onUserDeleted:', error);
+    throw error;
+  }
+});
+
+export const updateUserRole = functions.https.onCall(async (data, context) => {
+  try {
+    // Check if user is admin
+    if (!context.auth?.token.admin) {
+      throw new functions.https.HttpsError(
+        'permission-denied',
+        'Only admins can update user roles'
+      );
+    }
+
+    const { userId, role } = data;
+    if (!userId || !role) {
+      throw new functions.https.HttpsError(
+        'invalid-argument',
+        'userId and role are required'
+      );
+    }
+
+    // Update custom claims
+    await admin.auth().setCustomUserClaims(userId, { role });
+
+    // Update Firestore document
+    await admin.firestore().collection('users').doc(userId).update({
+      role,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error in updateUserRole:', error);
+    throw error;
+  }
+}); 

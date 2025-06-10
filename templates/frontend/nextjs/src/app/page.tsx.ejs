@@ -1,0 +1,97 @@
+import { Suspense } from 'react'
+import { Metadata } from 'next'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { ThemeToggle } from '@/components/theme-toggle'
+import { UserNav } from '@/components/user-nav'
+import { useAuth } from '@/components/auth-provider'
+
+export const metadata: Metadata = {
+  title: '<%= projectName %> - Modern Full Stack App',
+  description: 'A modern full-stack application built with Next.js',
+}
+
+export default function HomePage() {
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-14 items-center">
+          <div className="mr-4 flex">
+            <a className="mr-6 flex items-center space-x-2" href="/">
+              <span className="font-bold">🚀 <%= projectName %></span>
+            </a>
+          </div>
+          <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+            <nav className="flex items-center space-x-2">
+              <ThemeToggle />
+              <UserNav />
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      <main className="container py-6">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Card>
+            <CardHeader>
+              <CardTitle>Welcome to <%= projectName %></CardTitle>
+              <CardDescription>
+                A modern full-stack application template
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                This template includes:
+              </p>
+              <ul className="mt-2 list-disc pl-4 text-sm text-muted-foreground">
+                <li>Next.js 14 with App Router</li>
+                <li>TypeScript for type safety</li>
+                <li>Tailwind CSS for styling</li>
+                <li>Shadcn UI components</li>
+                <li>Authentication system</li>
+                <li>Dark mode support</li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Start</CardTitle>
+              <CardDescription>
+                Get started with development
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <code className="block rounded bg-muted p-2 text-sm">
+                  npm run dev
+                </code>
+                <p className="text-sm text-muted-foreground">
+                  Start the development server
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Documentation</CardTitle>
+              <CardDescription>
+                Learn more about the stack
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <Button variant="outline" asChild>
+                  <a href="/docs" target="_blank" rel="noopener noreferrer">
+                    View Documentation
+                  </a>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    </div>
+  )
+} 

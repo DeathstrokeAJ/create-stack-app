@@ -1,0 +1,40 @@
+# <%= projectName %>
+
+Generated with [create-stack-app](https://github.com/yourusername/create-stack-app).
+
+## Tech Stack
+- Frontend: <%= frontend %>
+- UI: <%= ui %>
+- Backend: <%= backend %>
+- TypeScript: <%= typescript ? 'Yes' : 'No' %>
+- Auth: <%= auth ? 'Yes' : 'No' %>
+- Docker: <%= docker ? 'Yes' : 'No' %>
+- Email: <%= email ? 'Yes' : 'No' %>
+
+## Getting Started
+
+1. Install dependencies:
+   ```bash
+   npm install
+   cd frontend && npm install
+   cd ../backend && npm install
+   cd ..
+   ```
+2. Copy and configure environment variables:
+   ```bash
+   cp .env.example .env
+   # Edit .env as needed
+   ```
+3. Start development:
+   ```bash
+   npm run dev
+   ```
+
+## Docker
+If you selected Docker support:
+```bash
+npm run docker:up
+```
+
+## License
+MIT 
