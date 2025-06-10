@@ -268,56 +268,43 @@ async function generatePackageJson(projectPath, config) {
 async function generateConfigFiles(projectPath, config) {
   const { typescript, ui, testing, docker } = config
 
-  // Next.js config
-  const nextConfig = `/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
-  experimental: {
-    appDir: true,
-  },
-  images: {
-    domains: ['localhost'],
-  },
-  env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-  },
-};
-
-module.exports = nextConfig;`
-
-  await fs.writeFile(path.join(projectPath, "next.config.js"), nextConfig)
-
-  // TypeScript config
-  if (typescript) {
-    const tsConfig = {
-      compilerOptions: {
-        target: "es5",
-        lib: ["dom", "dom.iterable", "esnext"],
-        allowJs: true,
-        skipLibCheck: true,
-        strict: true,
-        forceConsistentCasingInFileNames: true,
-        noEmit: true,
-        esModuleInterop: true,
-        module: "esnext",
-        moduleResolution: "bundler",
-        resolveJsonModule: true,
-        isolatedModules: true,
-        jsx: "preserve",
-        incremental: true,
-        plugins: [{ name: "next" }],
-        paths: { "@/*": ["./src/*"] },
-        baseUrl: ".",
-      },
-      include: ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-      exclude: ["node_modules"],
-    }
-    await fs.writeJson(path.join(projectPath, "tsconfig.json"), tsConfig, { spaces: 2 })
+  // Generate tsconfig.json or jsconfig.json
+  const configFile = typescript ? "tsconfig.json" : "jsconfig.json"
+  const configContent = {
+    compilerOptions: {
+      target: "es5",
+      lib: ["dom", "dom.iterable", "esnext"],
+      allowJs: true,
+      skipLibCheck: true,
+      strict: typescript,
+      noEmit: true,
+      esModuleInterop: true,
+      module: "esnext",
+      moduleResolution: "bundler",
+      resolveJsonModule: true,
+      isolatedModules: true,
+      jsx: "preserve",
+      incremental: true,
+      plugins: [
+        {
+          name: "next"
+        }
+      ],
+      paths: {
+        "@/*": ["./src/*"]
+      }
+    },
+    include: ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+    exclude: ["node_modules"]
   }
 
-  // Tailwind config
-  if (ui === "tailwind" || ui === "shadcn") {
+  await fs.writeFile(
+    path.join(projectPath, configFile),
+    JSON.stringify(configContent, null, 2)
+  )
+
+  // Generate tailwind.config.js
+  if (ui === "shadcn" || ui === "tailwind") {
     const tailwindConfig = `/** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
@@ -396,15 +383,6 @@ module.exports = {
 }`
 
     await fs.writeFile(path.join(projectPath, "tailwind.config.js"), tailwindConfig)
-
-    // PostCSS config
-    const postcssConfig = `module.exports = {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-}`
-    await fs.writeFile(path.join(projectPath, "postcss.config.js"), postcssConfig)
   }
 
   // ESLint config
@@ -816,7 +794,17 @@ async function generateComponents(projectPath, config) {
   await fs.ensureDir(path.join(projectPath, "src", "components", "ui"))
   await fs.ensureDir(path.join(projectPath, "src", "lib"))
 
-  if (ui === "shadcn") {
+  // Generate utils.ts first since components depend on it
+  const utils = `import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}`
+
+  await fs.writeFile(path.join(projectPath, "src", "lib", "utils.ts"), utils)
+
+  if (ui === "shadcn" || ui === "tailwind") {
     await generateShadcnComponents(projectPath, config)
   }
 

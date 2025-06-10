@@ -1,6 +1,6 @@
 {
   "name": "@deathstrokeaj/create-stack-app",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "CLI tool to generate full-stack web application templates with modern technologies",
   "main": "bin/index.js",
   "type": "module",
