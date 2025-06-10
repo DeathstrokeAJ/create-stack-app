@@ -105,7 +105,7 @@
 
 ## 📦 **Installation**
 
-> ⚠️ **Note**: This package is currently in development phase and not yet available on npm.
+> ⚠️ **Note**: This package is currently in production and available on npm, though bugs and issues are actively being addressed.
 
 ```bash
 # Coming soon
